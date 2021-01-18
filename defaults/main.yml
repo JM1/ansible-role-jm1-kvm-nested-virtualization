@@ -1,0 +1,6 @@
+---
+modprobe_conf_path: '/etc/modprobe.d/kvm-nested-virtualization.conf'
+
+reload_module: yes
+
+state: present
