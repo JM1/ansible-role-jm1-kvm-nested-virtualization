@@ -51,8 +51,8 @@
 - name: "Reload {{ kvm_kernel_module }} module if nested virtualization option has changed"
   when:
     reload_module and (
-      (state == "present" and nested_virtualization_state.content|b64decode in ['N', '0']) or
-      (state == "absent"  and nested_virtualization_state.content|b64decode in ['Y', '1'])
+      (state == "present" and nested_virtualization_state.content|b64decode|trim in ['N', '0']) or
+      (state == "absent"  and nested_virtualization_state.content|b64decode|trim in ['Y', '1'])
     )
   block:
   - name: 'Remove {{ kvm_kernel_module }} kernel module'
