@@ -1,4 +1,9 @@
 ---
+- name: Collect distribution facts
+  setup:
+    gather_subset:
+      - min
+
 - name: Load tasks specific to OS
   include_tasks: "setup-{{ ansible_facts['distribution'] }}.yml"
   when: ansible_facts['distribution'] in [ 'CentOS', 'Debian', 'Red Hat Enterprise Linux', 'Ubuntu' ]
