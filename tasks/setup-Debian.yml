@@ -38,29 +38,32 @@
     create: yes
     state: '{{ state }}'
 
-- name: "Ensure {{ kvm_kernel_module }} module is available and loaded"
-  modprobe:
-    name: "{{ kvm_kernel_module }}"
-    state: present
-
-- name: Read nested virtualization support of currently loaded kernel module
-  slurp:
-    src: '/sys/module/{{ kvm_kernel_module }}/parameters/nested'
-  register: nested_virtualization_state
-
-- name: "Reload {{ kvm_kernel_module }} module if nested virtualization option has changed"
-  when:
-    reload_module and (
-      (state == "present" and nested_virtualization_state.content|b64decode|trim in ['N', '0']) or
-      (state == "absent"  and nested_virtualization_state.content|b64decode|trim in ['Y', '1'])
-    )
+- name: Apply changes if virtualization support has been detected
+  when: kvm_kernel_module|default(None) != None
   block:
-  - name: 'Remove {{ kvm_kernel_module }} kernel module'
+  - name: "Ensure {{ kvm_kernel_module }} module is available and loaded"
     modprobe:
-      name: '{{ kvm_kernel_module }}'
-      state: absent
-
-  - name: 'Load {{ kvm_kernel_module }} kernel module'
-    modprobe:
-      name: '{{ kvm_kernel_module }}'
+      name: "{{ kvm_kernel_module }}"
       state: present
+
+  - name: Read nested virtualization support of currently loaded kernel module
+    slurp:
+      src: '/sys/module/{{ kvm_kernel_module }}/parameters/nested'
+    register: nested_virtualization_state
+
+  - name: "Reload {{ kvm_kernel_module }} module if nested virtualization option has changed"
+    when:
+      reload_module and (
+        (state == "present" and nested_virtualization_state.content|b64decode|trim in ['N', '0']) or
+        (state == "absent"  and nested_virtualization_state.content|b64decode|trim in ['Y', '1'])
+      )
+    block:
+    - name: 'Remove {{ kvm_kernel_module }} kernel module'
+      modprobe:
+        name: '{{ kvm_kernel_module }}'
+        state: absent
+
+    - name: 'Load {{ kvm_kernel_module }} kernel module'
+      modprobe:
+        name: '{{ kvm_kernel_module }}'
+        state: present
