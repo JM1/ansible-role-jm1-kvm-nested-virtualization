@@ -27,11 +27,11 @@
   # Options are added for all cpus because host might be migrated to another cpu after this role has been executed
   blockinfile:
     block: |
-      # (2020) Jakob Meng <jakobmeng@web.de>
+      # (2020-2021) Jakob Meng <jakobmeng@web.de>
       # Enable KVM nested virtualization for Intel and AMD CPUs
       # Ref.: https://galaxy.ansible.com/jm1/kvm_nested_virtualization
       options kvm_intel nested=y
-      options kvm_amd nested=y
+      options kvm_amd nested=1
     path: '{{ modprobe_conf_path }}'
     owner: root
     group: root
