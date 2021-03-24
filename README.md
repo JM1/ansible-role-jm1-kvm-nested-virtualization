@@ -10,7 +10,6 @@ It is inspired by [Lukas Bednar's](https://github.com/lukas-bednar)
 
 **Tested OS images**
 - [Cloud images](https://cdimage.debian.org/cdimage/openstack/current/) of `Debian 10 (Buster)` \[`amd64`\]
-- [Cloud images](https://cdimage.debian.org/cdimage/openstack/testing/) of `Debian 11 (Bullseye)` \[`amd64`\]
 
 Available on Ansible Galaxy: [jm1.kvm_nested_virtualization](https://galaxy.ansible.com/jm1/kvm_nested_virtualization)
 
