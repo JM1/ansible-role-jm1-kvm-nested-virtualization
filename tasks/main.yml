@@ -4,29 +4,29 @@
 # kate: end-of-line unix; space-indent on; indent-width 2; remove-trailing-spaces modified;
 
 - name: Read /proc/cpuinfo to find out virtualization support later
-  slurp:
+  ansible.builtin.slurp:
     src: /proc/cpuinfo
   register: cpuinfo
 
 - name: Detect Intel virtualization
-  set_fact:
+  ansible.builtin.set_fact:
     kvm_kernel_module: "kvm_intel"
   when: kvm_kernel_module|default(None) == None and 'vmx' in cpuinfo.content|b64decode
 
 - name: Detect AMD virtualization
-  set_fact:
+  ansible.builtin.set_fact:
     kvm_kernel_module: "kvm_amd"
   when: kvm_kernel_module|default(None) == None and 'svm' in cpuinfo.content|b64decode
 
 - name: Warn if system does not support virtualization
-  debug:
+  ansible.builtin.debug:
     msg: "No virtualization support has been detected"
   ignore_errors: yes
   when: kvm_kernel_module|default(None) == None
 
 - name: "Add/Remove modprobe options for nested virtualization in {{ modprobe_conf_path }}"
   # Options are added for all cpus because host might be migrated to another cpu after this role has been executed
-  blockinfile:
+  ansible.builtin.blockinfile:
     block: |
       # 2020-2021 Jakob Meng, <jakobmeng@web.de>
       # Enable KVM nested virtualization for Intel and AMD CPUs
@@ -43,12 +43,12 @@
   when: kvm_kernel_module|default(None) != None
   block:
   - name: "Ensure {{ kvm_kernel_module }} module is available and loaded"
-    modprobe:
+    community.general.modprobe:
       name: "{{ kvm_kernel_module }}"
       state: present
 
   - name: Read nested virtualization support of currently loaded kernel module
-    slurp:
+    ansible.builtin.slurp:
       src: '/sys/module/{{ kvm_kernel_module }}/parameters/nested'
     register: nested_virtualization_state
 
@@ -60,11 +60,11 @@
       )
     block:
     - name: 'Remove {{ kvm_kernel_module }} kernel module'
-      modprobe:
+      community.general.modprobe:
         name: '{{ kvm_kernel_module }}'
         state: absent
 
     - name: 'Load {{ kvm_kernel_module }} kernel module'
-      modprobe:
+      community.general.modprobe:
         name: '{{ kvm_kernel_module }}'
         state: present

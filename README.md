@@ -15,7 +15,14 @@ Available on Ansible Galaxy: [jm1.kvm_nested_virtualization](https://galaxy.ansi
 
 ## Requirements
 
-None.
+This role uses module(s) from collection [`community.general`][galaxy-community-general]. You can fetch this collection
+from Ansible Galaxy using the provided [`requirements.yml`](requirements.yml):
+
+```sh
+ansible-galaxy collection install --requirements-file requirements.yml
+```
+
+[galaxy-community-general]: https://galaxy.ansible.com/community/general
 
 ## Variables
 
